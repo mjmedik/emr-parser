@@ -44,7 +44,7 @@ function parse() {
   const text = document.getElementById("input").value.trim();
   const blocks = text.split(/\n\s*\n+/);
 
-  let csv = "first_name,last_name,title_job_degree,email,DOB,sms_number,supplement_1,supplement_2,supplement_3,supplement_4,supplement_5,veteran,active_military,comment,date_added\n";
+let csv = "first_name\tlast_name\ttitle_job_degree\temail\tDOB\tsms_number\tsupplement_1\tsupplement_2\tsupplement_3\tsupplement_4\tsupplement_5\tveteran\tactive_military\tcomment\tdate_added\n";
 
   const today = new Date().toLocaleDateString("en-US");
 
@@ -100,7 +100,7 @@ function parse() {
       veteran,active,
       comments.join("; "),
       today
-    ].join(",") + "\n";
+    ].join("\t") + "\n";
 
   });
 
