@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMR → CSV Parser</title>
+<style>
+body { font-family: Arial; padding: 15px; }
+textarea { width: 100%; height: 200px; margin-bottom: 10px; }
+button { padding: 10px; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<h3>Paste EMR Text</h3>
+<textarea id="input"></textarea>
+
+<button onclick="parse()">Convert to CSV</button>
+
+<h3>CSV Output</h3>
+<textarea id="output"></textarea>
+
+<script>
+
+const TITLE_KEYWORDS = [
+"md","do","pa","np","rn","lpn","pt","ot","pharmd",
+"dnp","msn","bsn","cna","emt","paramedic","firefighter",
+"teacher","engineer","lawyer","accountant","law enforcement","speech path"
+];
+
+function isTitle(token) {
+  const t = token.toLowerCase();
+  return TITLE_KEYWORDS.some(k => t.includes(k));
+}
+
+function isSupplement(token) {
+  const t = token.toLowerCase();
+  if (/\d/.test(t)) return true;
+  if (t.includes("-")) return true;
+  if (t.replace(/\s/g,"").length <= 12) return true;
+  return false;
+}
+
+function parse() {
+  const text = document.getElementById("input").value.trim();
+  const blocks = text.split(/\n\s*\n+/);
+
+  let csv = "first_name,last_name,title_job_degree,email,DOB,sms_number,supplement_1,supplement_2,supplement_3,supplement_4,supplement_5,veteran,active_military,comment,date_added\n";
+
+  const today = new Date().toLocaleDateString("en-US");
+
+  blocks.forEach(block => {
+    const lines = block.split("\n").map(l => l.trim()).filter(Boolean);
+    if (!lines.length) return;
+
+    let first="", last="", title="", supplements=[], comments=[];
+    let veteran="", active="";
+
+    const nameLine = lines[0];
+    const match = nameLine.match(/^(.*?)\s*\((.*?)\)$/);
+
+    let namePart = nameLine;
+
+    if (match) {
+      namePart = match[1];
+      const tokens = match[2].split(",").map(t=>t.trim());
+
+      tokens.forEach(tok => {
+        const low = tok.toLowerCase();
+
+        if (low === "veteran") veteran = "veteran";
+        else if (low === "active military") active = "active_military";
+        else if (isTitle(tok)) title = tok;
+        else if (isSupplement(tok)) supplements.push(tok);
+        else comments.push(tok);
+      });
+    }
+
+    const parts = namePart.split(" ");
+    first = parts.slice(0,-1).join(" ");
+    last = parts.slice(-1)[0];
+
+    let email="", dob="", phone="";
+
+    for (let i=1;i<lines.length;i++){
+      if (lines[i].toLowerCase().includes("email")) email = lines[i+1] || "";
+      if (lines[i].toLowerCase().includes("date of birth")) dob = lines[i+1] || "";
+      if (lines[i].toLowerCase().includes("phone")) phone = lines[i+1] || "";
+    }
+
+    phone = phone.replace(/\D/g,"");
+
+    const supp = ["","","","",""];
+    for (let i=0;i<supplements.length && i<5;i++){
+      supp[i] = supplements[i];
+    }
+
+    csv += [
+      first,last,title,email,dob,phone,
+      ...supp,
+      veteran,active,
+      comments.join("; "),
+      today
+    ].join(",") + "\n";
+
+  });
+
+  document.getElementById("output").value = csv;
+}
+
+</script>
+
+</body>
+</html>
