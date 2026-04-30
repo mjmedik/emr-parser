@@ -44,7 +44,7 @@ function parse() {
   const text = document.getElementById("input").value.trim();
   const blocks = text.split(/\n\s*\n+/);
 
-let csv = "first_name\tlast_name\ttitle_job_degree\temail\tDOB\tsms_number\tsupplement_1\tsupplement_2\tsupplement_3\tsupplement_4\tsupplement_5\tveteran\tactive_military\tcomment\tdate_added\n";
+let csv = "first_name\tlast_name\ttitle_job_degree\temail\tgender\tDOB\tsms_number\tsupplement_1\tsupplement_2\tsupplement_3\tsupplement_4\tsupplement_5\tveteran\tactive_military\tcomment\tdate_added\n";
 
   const today = new Date().toLocaleDateString("en-US");
 
@@ -79,10 +79,11 @@ let csv = "first_name\tlast_name\ttitle_job_degree\temail\tDOB\tsms_number\tsupp
     first = parts.slice(0,-1).join(" ");
     last = parts.slice(-1)[0];
 
-    let email="", dob="", phone="";
+    let email="", gender="", dob="", phone="";
 
     for (let i=1;i<lines.length;i++){
       if (lines[i].toLowerCase().includes("email")) email = lines[i+1] || "";
+      if (low.includes("gender")) gender = lines[i+1] || "";
       if (lines[i].toLowerCase().includes("date of birth")) dob = lines[i+1] || "";
       if (lines[i].toLowerCase().includes("phone")) phone = lines[i+1] || "";
     }
@@ -95,7 +96,7 @@ let csv = "first_name\tlast_name\ttitle_job_degree\temail\tDOB\tsms_number\tsupp
     }
 
     csv += [
-      first,last,title,email,dob,phone,
+      first,last,title,email,gender,dob,phone,
       ...supp,
       veteran,active,
       comments.join("; "),
