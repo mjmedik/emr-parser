@@ -1,2 +1,2 @@
 # emr-parser
-Text to CSV
+Text to TSV
