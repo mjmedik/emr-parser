@@ -44,7 +44,7 @@ function parse() {
   const text = document.getElementById("input").value.trim();
   const blocks = text.split(/\n\s*\n+/);
 
-let csv = "first_name\tlast_name\ttitle_job_degree\temail\tgender\tDOB\tsms_number\tsupplement_1\tsupplement_2\tsupplement_3\tsupplement_4\tsupplement_5\tveteran\tactive_military\tcomment\tdate_added\n";
+let output = "first_name\tlast_name\ttitle_job_degree\temail\tgender\tDOB\tsms_number\tsupplement_1\tsupplement_2\tsupplement_3\tsupplement_4\tsupplement_5\tveteran\tactive_military\tcomment\tdate_added\n";
 
   const today = new Date().toLocaleDateString("en-US");
 
@@ -81,13 +81,14 @@ let csv = "first_name\tlast_name\ttitle_job_degree\temail\tgender\tDOB\tsms_numb
 
     let email="", gender="", dob="", phone="";
 
-    for (let i=1;i<lines.length;i++){
-      if (lines[i].toLowerCase().includes("email")) email = lines[i+1] || "";
-      if (low.includes("gender")) gender = lines[i+1] || "";
-      if (lines[i].toLowerCase().includes("date of birth")) dob = lines[i+1] || "";
-      if (lines[i].toLowerCase().includes("phone")) phone = lines[i+1] || "";
-    }
+		for (let i=1;i<lines.length;i++){
+  		const low = lines[i].toLowerCase();
 
+  		if (low.includes("email")) email = lines[i+1] || "";
+  		if (low.includes("gender")) gender = lines[i+1] || "";
+  		if (low.includes("date of birth")) dob = lines[i+1] || "";
+  		if (low.includes("phone")) phone = lines[i+1] || "";
+		}
     phone = phone.replace(/\D/g,"");
 
     const supp = ["","","","",""];
@@ -95,7 +96,7 @@ let csv = "first_name\tlast_name\ttitle_job_degree\temail\tgender\tDOB\tsms_numb
       supp[i] = supplements[i];
     }
 
-    csv += [
+    output += [
       first,last,title,email,gender,dob,phone,
       ...supp,
       veteran,active,
@@ -105,7 +106,7 @@ let csv = "first_name\tlast_name\ttitle_job_degree\temail\tgender\tDOB\tsms_numb
 
   });
 
-  document.getElementById("output").value = csv;
+  document.getElementById("output").value = output;
 }
 
 </script>
